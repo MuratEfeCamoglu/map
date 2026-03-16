@@ -15,6 +15,7 @@
 
   const CAT_MAP   = Object.fromEntries(CATEGORIES.map(c => [c.id, c]));
   const CAT_IDS   = CATEGORIES.map(c => c.id);
+  const TOTAL_CITIES = 81;
   const DEFAULT_COLOR   = '#b0bec5';
   const DEFAULT_COLOR_DARK = '#455a64';
   const HOVER_LIGHTEN = 0.2;
@@ -276,8 +277,13 @@
   function updateCounts() {
     const counts = { tatil: 0, yolda: 0, gezilen: 0, yasanilan: 0 };
     Object.values(cityData).forEach(cat => { if (counts[cat] !== undefined) counts[cat]++; });
+    const totalSelected = Object.keys(cityData).length;
+    document.getElementById('count-total').textContent = `${totalSelected}/${TOTAL_CITIES}`;
+    document.getElementById('export-count-total').textContent = `${totalSelected}/${TOTAL_CITIES}`;
     CATEGORIES.forEach(c => {
-      document.getElementById('count-' + c.id).textContent = counts[c.id];
+      const countText = `${counts[c.id]}/${TOTAL_CITIES}`;
+      document.getElementById('count-' + c.id).textContent = countText;
+      document.getElementById('export-count-' + c.id).textContent = countText;
     });
   }
 
@@ -295,7 +301,7 @@
       if (cities.length === 0) return;
       const group = document.createElement('div');
       group.className = 'city-group';
-      group.innerHTML = `<div class="city-group-header" style="color:${cat.color}">${cat.emoji} ${cat.label} (${cities.length})</div>`;
+      group.innerHTML = `<div class="city-group-header" style="color:${cat.color}">${cat.emoji} ${cat.label} (${cities.length}/${TOTAL_CITIES})</div>`;
       cities.forEach(name => {
         const tag = document.createElement('span');
         tag.className = 'city-tag';

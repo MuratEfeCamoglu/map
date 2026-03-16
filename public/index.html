@@ -33,31 +33,58 @@
 
   <!-- CATEGORIES LEGEND -->
   <div class="categories-bar">
+    <div class="selection-summary">
+      <span class="selection-summary-label">Toplam</span>
+      <span class="selection-summary-count" id="count-total">0/81</span>
+    </div>
     <div class="cat-btn active" data-cat="tatil"   id="cat-tatil">
       <span class="cat-dot" style="background:#e74c3c"></span>
       <span class="cat-label">🏖️ Tatile Gidilen</span>
-      <span class="cat-count" id="count-tatil">0</span>
+      <span class="cat-count" id="count-tatil">0/81</span>
     </div>
     <div class="cat-btn" data-cat="yolda"   id="cat-yolda">
       <span class="cat-dot" style="background:#3498db"></span>
       <span class="cat-label">🚗 Yolda Geçilen</span>
-      <span class="cat-count" id="count-yolda">0</span>
+      <span class="cat-count" id="count-yolda">0/81</span>
     </div>
     <div class="cat-btn" data-cat="gezilen"   id="cat-gezilen">
       <span class="cat-dot" style="background:#27ae60"></span>
       <span class="cat-label">🧭 Gezilen</span>
-      <span class="cat-count" id="count-gezilen">0</span>
+      <span class="cat-count" id="count-gezilen">0/81</span>
     </div>
     <div class="cat-btn" data-cat="yasanilan" id="cat-yasanilan">
       <span class="cat-dot" style="background:#f39c12"></span>
       <span class="cat-label">🏠 Yaşanılan</span>
-      <span class="cat-count" id="count-yasanilan">0</span>
+      <span class="cat-count" id="count-yasanilan">0/81</span>
     </div>
   </div>
 
   <!-- MAP -->
   <main class="map-section">
     <div id="map_container">
+      <div class="export-stats" id="exportStats">
+        <div class="export-stats-title">İstatistik</div>
+        <div class="export-stats-row">
+          <span>Toplam</span>
+          <span id="export-count-total">0/81</span>
+        </div>
+        <div class="export-stats-row">
+          <span>Tatil</span>
+          <span id="export-count-tatil">0/81</span>
+        </div>
+        <div class="export-stats-row">
+          <span>Yolda</span>
+          <span id="export-count-yolda">0/81</span>
+        </div>
+        <div class="export-stats-row">
+          <span>Gezilen</span>
+          <span id="export-count-gezilen">0/81</span>
+        </div>
+        <div class="export-stats-row">
+          <span>Yaşanılan</span>
+          <span id="export-count-yasanilan">0/81</span>
+        </div>
+      </div>
       <div class="map-legend" id="exportLegend">
         <div class="legend-item"><span class="legend-color" style="background:#e74c3c"></span> Tatil</div>
         <div class="legend-item"><span class="legend-color" style="background:#3498db"></span> Yolda</div>
