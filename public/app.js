@@ -62,10 +62,54 @@
   /* ---- Download Helpers ---- */
   function exportCanvas() {
     const container = document.getElementById('map_container');
+    const svg = container.querySelector('svg');
     const bkg = isDark ? '#0f172a' : '#e0f2fe';
+    const prev = {
+      width: container.style.width,
+      maxWidth: container.style.maxWidth,
+      overflow: container.style.overflow,
+      overflowX: container.style.overflowX,
+      overflowY: container.style.overflowY,
+      scrollLeft: container.scrollLeft,
+      svgWidth: svg ? svg.style.width : '',
+      svgMinWidth: svg ? svg.style.minWidth : '',
+      svgMaxWidth: svg ? svg.style.maxWidth : '',
+    };
+    const exportWidth = Math.max(container.scrollWidth, svg ? svg.scrollWidth : 0, container.clientWidth);
+
     container.classList.add('is-exporting');
-    return html2canvas(container, { backgroundColor: bkg, scale: 2 })
+    container.scrollLeft = 0;
+    container.style.width = exportWidth + 'px';
+    container.style.maxWidth = 'none';
+    container.style.overflow = 'visible';
+    container.style.overflowX = 'visible';
+    container.style.overflowY = 'visible';
+    if (svg) {
+      svg.style.width = exportWidth + 'px';
+      svg.style.minWidth = exportWidth + 'px';
+      svg.style.maxWidth = 'none';
+    }
+
+    return html2canvas(container, {
+      backgroundColor: bkg,
+      scale: 2,
+      width: exportWidth,
+      windowWidth: exportWidth,
+      scrollX: 0,
+      scrollY: 0,
+    })
       .finally(() => {
+        container.style.width = prev.width;
+        container.style.maxWidth = prev.maxWidth;
+        container.style.overflow = prev.overflow;
+        container.style.overflowX = prev.overflowX;
+        container.style.overflowY = prev.overflowY;
+        container.scrollLeft = prev.scrollLeft;
+        if (svg) {
+          svg.style.width = prev.svgWidth;
+          svg.style.minWidth = prev.svgMinWidth;
+          svg.style.maxWidth = prev.svgMaxWidth;
+        }
         container.classList.remove('is-exporting');
       });
   }
