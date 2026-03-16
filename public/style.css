@@ -251,10 +251,10 @@ a { color: inherit; }
   display:     flex;
   grid-area:   legend;
   align-self:  start;
-  flex-direction: row;
-  flex-wrap:   wrap;
+  display:     grid;
+  grid-template-columns: repeat(2, auto);
   justify-content: flex-end;
-  gap:         6px 12px;
+  gap:         6px 10px;
 }
 .legend-item {
   display:     flex;
@@ -507,7 +507,8 @@ a { color: inherit; }
     min-width: 700px;
   }
   #map_container.is-exporting .map-legend {
-    display: flex;
-    gap: 6px 10px;
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+    gap: 5px 8px;
   }
 }

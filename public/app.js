@@ -16,6 +16,17 @@
   const CAT_MAP   = Object.fromEntries(CATEGORIES.map(c => [c.id, c]));
   const CAT_IDS   = CATEGORIES.map(c => c.id);
   const TOTAL_CITIES = 81;
+  const MOBILE_LABELS = {
+    Afyonkarahisar: 'Afyon',
+    Kahramanmaras: 'K.Maras',
+    Sanliurfa: 'S.Urfa',
+    Kirsehir: 'Kirsehir',
+    Kirklareli: 'Kirklareli',
+    Canakkale: 'Canakkale',
+    Balikesir: 'Balikesir',
+    Eskisehir: 'Eskisehir',
+    Nevsehir: 'Nevsehir',
+  };
   const DEFAULT_COLOR   = '#b0bec5';
   const DEFAULT_COLOR_DARK = '#455a64';
   const HOVER_LIGHTEN = 0.2;
@@ -24,6 +35,8 @@
   let cityData  = {};  // { cityName: catId }
   let activeCat = 'tatil';
   let isDark    = localStorage.getItem('map-theme') === 'dark';
+  let mapSvg = null;
+  let currentMapWidth = 0;
 
   /* ---- Apply initial theme ---- */
   applyTheme(isDark);
@@ -64,6 +77,7 @@
     const container = document.getElementById('map_container');
     const svg = container.querySelector('svg');
     const bkg = isDark ? '#0f172a' : '#e0f2fe';
+    const exportLabelWidth = Math.max(currentMapWidth, 760);
     const prev = {
       width: container.style.width,
       maxWidth: container.style.maxWidth,
@@ -89,6 +103,9 @@
       svg.style.minWidth = exportWidth + 'px';
       svg.style.maxWidth = 'none';
     }
+    if (mapSvg) {
+      updateLabelLayout(mapSvg, exportLabelWidth);
+    }
 
     return html2canvas(container, {
       backgroundColor: bkg,
@@ -109,6 +126,9 @@
           svg.style.width = prev.svgWidth;
           svg.style.minWidth = prev.svgMinWidth;
           svg.style.maxWidth = prev.svgMaxWidth;
+        }
+        if (mapSvg) {
+          updateLabelLayout(mapSvg, currentMapWidth);
         }
         container.classList.remove('is-exporting');
       });
@@ -183,6 +203,8 @@
       .style('width', '100%')
       .style('height', 'auto')
       .style('display', 'block');
+    mapSvg = svg;
+    currentMapWidth = W;
 
     /* ---- Province paths ---- */
     svg.append('g')
@@ -253,6 +275,7 @@
         .attr('dominant-baseline', 'central')
         .attr('class', 'city-label')
         .attr('data-city', d => d.properties.name)
+        .text(d => getCityLabel(d.properties.name, W))
         .style('font-size', getLabelFontSize(W) + 'px')
         .style('fill', d => getLabelFill(d.properties.name))
         .style('pointer-events', 'none')
@@ -266,7 +289,9 @@
 
     /* ---- Responsive resize ---- */
     window.addEventListener('resize', () => {
-      // SVG scales via viewBox + 100% width, no redraw needed
+      const nextWidth = container.clientWidth || window.innerWidth;
+      currentMapWidth = nextWidth;
+      updateLabelLayout(svg, nextWidth);
     });
   });
 
@@ -292,8 +317,25 @@
   function getLabelFontSize(W) {
     if (W > 1400) return 8.5;
     if (W > 900)  return 7.5;
+    if (W > 760)  return 6.8;
     if (W > 600)  return 6.5;
-    return 5.5;
+    if (W > 420)  return 5.8;
+    return 5.1;
+  }
+
+  function getCityLabel(cityName, W) {
+    if (W > 640) return cityName;
+    if (MOBILE_LABELS[cityName]) return MOBILE_LABELS[cityName];
+    if (cityName.length <= 9) return cityName;
+    const compact = cityName.replace(/[aeiouAEIOU]/g, '');
+    if (compact.length <= 9) return compact;
+    return cityName.slice(0, 8);
+  }
+
+  function updateLabelLayout(svg, width) {
+    svg.selectAll('.city-label')
+      .text(d => getCityLabel(d.properties.name, width))
+      .style('font-size', getLabelFontSize(width) + 'px');
   }
 
   function redrawColors() {
