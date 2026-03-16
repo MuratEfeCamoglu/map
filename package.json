@@ -1,0 +1,24 @@
+{
+  "name": "map",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MuratEfeCamoglu/map.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MuratEfeCamoglu/map/issues"
+  },
+  "homepage": "https://github.com/MuratEfeCamoglu/map#readme",
+  "description": "",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
