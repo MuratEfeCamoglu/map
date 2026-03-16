@@ -74,7 +74,11 @@
   function exportCanvas() {
     const container = document.getElementById('map_container');
     const bkg = isDark ? '#0f172a' : '#e0f2fe';
-    return html2canvas(container, { backgroundColor: bkg, scale: 2 });
+    container.classList.add('is-exporting');
+    return html2canvas(container, { backgroundColor: bkg, scale: 2 })
+      .finally(() => {
+        container.classList.remove('is-exporting');
+      });
   }
 
   function downloadFile(blob, filename) {
