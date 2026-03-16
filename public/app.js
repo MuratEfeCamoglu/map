@@ -25,16 +25,6 @@
   let activeCat = 'tatil';
   let isDark    = localStorage.getItem('map-theme') === 'dark';
 
-  /* ---- Load from localStorage ---- */
-  try {
-    const saved = localStorage.getItem('turkeymap-v2');
-    if (saved) cityData = JSON.parse(saved);
-  } catch (_) { cityData = {}; }
-
-  function saveData() {
-    localStorage.setItem('turkeymap-v2', JSON.stringify(cityData));
-  }
-
   /* ---- Apply initial theme ---- */
   applyTheme(isDark);
 
@@ -64,7 +54,6 @@
   document.getElementById('resetBtn').addEventListener('click', () => {
     if (!confirm('Tüm seçimler sıfırlanacak. Emin misin?')) return;
     cityData = {};
-    saveData();
     redrawColors();
     updateCounts();
     updateCitiesList();
@@ -192,7 +181,6 @@
               delete cityData[name];
             }
           }
-          saveData();
           d3.select(this).attr('fill', getFill(name));
           updateCounts();
           updateCitiesList();
@@ -202,7 +190,6 @@
           event.preventDefault();
           const name = d.properties.name;
           delete cityData[name];
-          saveData();
           d3.select(this).attr('fill', getFill(name));
           updateCounts();
           updateCitiesList();
@@ -314,7 +301,6 @@
         tag.querySelector('.remove-tag').addEventListener('click', (e) => {
           e.stopPropagation();
           delete cityData[name];
-          saveData();
           d3.selectAll('.province-path')
             .filter(d => d.properties.name === name)
             .attr('fill', getFill(name));
