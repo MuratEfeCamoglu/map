@@ -1,15 +1,15 @@
 (function () {
   'use strict';
 
-  const CATEGORIES = [
-    { id: 'flort', label: 'Flört', color: '#e84393', emoji: '' },
-    { id: 'sevgili', label: 'Sevgili', color: '#0984e3', emoji: '' },
-    { id: 'hoslanma', label: 'Hoşlanma', color: '#00b894', emoji: '' },
-    { id: 'iyidir', label: 'Kızları/Oğlanları İyidir', color: '#f39c12', emoji: '' },
+  let CATEGORIES = [
+    { id: 'flort', label: 'Flört', color: '#e84393', emoji: '', isDefault: true },
+    { id: 'sevgili', label: 'Sevgili', color: '#0984e3', emoji: '', isDefault: true },
+    { id: 'hoslanma', label: 'Hoşlanma', color: '#00b894', emoji: '', isDefault: true },
+    { id: 'iyidir', label: 'Kızları/Oğlanları İyidir', color: '#f39c12', emoji: '', isDefault: true },
   ];
 
-  const CAT_MAP = Object.fromEntries(CATEGORIES.map((cat) => [cat.id, cat]));
-  const CAT_IDS = CATEGORIES.map((cat) => cat.id);
+  let CAT_MAP = Object.fromEntries(CATEGORIES.map((cat) => [cat.id, cat]));
+  let CAT_IDS = CATEGORIES.map((cat) => cat.id);
   const TOTAL_CITIES = 81;
   const MOBILE_LABELS = {
     Afyonkarahisar: 'Afyon',
@@ -34,13 +34,117 @@
 
   applyTheme(isDark);
 
-  document.querySelectorAll('.cat-btn').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      activeCat = btn.dataset.cat;
-      document.querySelectorAll('.cat-btn').forEach((item) => item.classList.remove('active'));
-      btn.classList.add('active');
+  function initCategoryButtons() {
+    const bar = document.querySelector('.categories-bar');
+    // Keep only summary
+    const summary = bar.querySelector('.selection-summary');
+    bar.innerHTML = '';
+    bar.appendChild(summary);
+
+    CATEGORIES.forEach(cat => {
+      const btn = document.createElement('div');
+      btn.className = `cat-btn ${activeCat === cat.id ? 'active' : ''}`;
+      btn.dataset.cat = cat.id;
+      btn.id = `cat-${cat.id}`;
+      btn.innerHTML = `
+        <span class="cat-dot" style="background:${cat.color}"></span>
+        <span class="cat-label">${cat.label}</span>
+        <span class="cat-count" id="count-${cat.id}">0/81</span>
+        ${!cat.isDefault ? `<span class="delete-cat" data-id="${cat.id}">✕</span>` : ''}
+      `;
+      btn.addEventListener('click', (e) => {
+        if (e.target.classList.contains('delete-cat')) {
+          e.stopPropagation();
+          deleteCategory(cat.id);
+          return;
+        }
+        activeCat = cat.id;
+        document.querySelectorAll('.cat-btn').forEach((item) => item.classList.remove('active'));
+        btn.classList.add('active');
+      });
+      bar.appendChild(btn);
     });
+
+    const addBtn = document.createElement('div');
+    addBtn.className = 'cat-btn add-cat-btn';
+    addBtn.innerHTML = '<span>➕ Kategori Ekle</span>';
+    addBtn.addEventListener('click', () => {
+      document.getElementById('addCatModal').classList.add('show');
+    });
+    bar.appendChild(addBtn);
+
+    // Update export elements
+    const exportStats = document.getElementById('exportStats');
+    const exportLegend = document.getElementById('exportLegend');
+    
+    exportStats.innerHTML = '<div class="export-stats-title">İstatistik</div>';
+    const totalRow = document.createElement('div');
+    totalRow.className = 'export-stats-row';
+    totalRow.innerHTML = `<span>Toplam</span><span id="export-count-total">0/81</span>`;
+    exportStats.appendChild(totalRow);
+    
+    exportLegend.innerHTML = '';
+
+    CATEGORIES.forEach(cat => {
+      // Export Stats
+      const row = document.createElement('div');
+      row.className = 'export-stats-row';
+      row.innerHTML = `<span>${cat.label}</span><span id="export-count-${cat.id}">0/81</span>`;
+      exportStats.appendChild(row);
+
+      // Export Legend
+      const leg = document.createElement('div');
+      leg.className = 'legend-item';
+      leg.innerHTML = `<span class="legend-color" style="background:${cat.color}"></span> ${cat.label}`;
+      exportLegend.appendChild(leg);
+    });
+  }
+
+  initCategoryButtons();
+
+  // Modal logic
+  document.getElementById('closeModal').addEventListener('click', () => {
+    document.getElementById('addCatModal').classList.remove('show');
   });
+  
+  document.getElementById('saveCatBtn').addEventListener('click', () => {
+    const name = document.getElementById('newCatName').value.trim();
+    const color = document.getElementById('newCatColor').value;
+    if (!name) return;
+    
+    const id = 'cat_' + Date.now();
+    CATEGORIES.push({ id, label: name, color, emoji: '', isDefault: false });
+    syncCategoryState();
+    initCategoryButtons();
+    updateCounts();
+    updateCitiesList();
+    document.getElementById('addCatModal').classList.remove('show');
+    document.getElementById('newCatName').value = '';
+  });
+
+  function deleteCategory(id) {
+    CATEGORIES = CATEGORIES.filter(c => c.id !== id);
+    if (activeCat === id) activeCat = CATEGORIES[0].id;
+    // Remove data from cities
+    Object.keys(cityData).forEach(city => {
+      cityData[city] = cityData[city].filter(catId => catId !== id);
+      if (cityData[city].length === 0) delete cityData[city];
+    });
+    syncCategoryState();
+    initCategoryButtons();
+    updateCounts();
+    updateCitiesList();
+    redrawColors();
+  }
+
+  function syncCategoryState() {
+    CAT_MAP = Object.fromEntries(CATEGORIES.map((cat) => [cat.id, cat]));
+    CAT_IDS = CATEGORIES.map((cat) => cat.id);
+  }
+
+  function saveCategories() {
+    // No longer saving to localStorage as per request
+  }
 
   document.getElementById('themeToggle').addEventListener('click', () => {
     isDark = !isDark;
@@ -71,15 +175,20 @@
 
   document.getElementById('downloadPdfBtn').addEventListener('click', () => {
     exportCanvas().then((canvas) => {
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new window.jspdf.jsPDF({
-        orientation: canvas.width > canvas.height ? 'landscape' : 'portrait',
-        unit: 'px',
-        format: [canvas.width, canvas.height],
-      });
+      try {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new window.jspdf.jsPDF({
+          orientation: canvas.width > canvas.height ? 'landscape' : 'portrait',
+          unit: 'px',
+          format: [canvas.width, canvas.height],
+        });
 
-      pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
-      downloadFile(pdf.output('blob'), 'turkiye-haritam.pdf');
+        pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+        downloadFile(pdf.output('blob'), 'turkiye-haritam.pdf');
+      } catch (err) {
+        console.error('PDF export error:', err);
+        alert('PDF olusturulurken bir hata olustu.');
+      }
     });
   });
 
@@ -130,7 +239,12 @@
       scrollY: 0,
       useCORS: true,
       allowTaint: true,
-      logging: false,
+      logging: true, // Enable logging to see what's happening
+      imageTimeout: 15000,
+    }).catch(err => {
+      console.error('html2canvas error:', err);
+      alert('Goruntu olusturulurken bir hata olustu.');
+      throw err;
     }).finally(() => {
       container.style.width = prev.width;
       container.style.maxWidth = prev.maxWidth;
@@ -217,7 +331,7 @@
       })
       .on('click', function (event, d) {
         const cityName = d.properties.name;
-        cycleCityCategory(cityName);
+        handleCityClick(cityName);
         d3.select(this).attr('fill', getFill(cityName));
         updateCounts();
         updateCitiesList();
@@ -268,25 +382,29 @@
     return Array.isArray(cats) ? cats : [];
   }
 
-  function cycleCityCategory(cityName) {
+  function handleCityClick(cityName) {
     const cats = getCityCategories(cityName);
-    // If multiple categories are selected (from old version or multi-select), reset to first
-    if (cats.length > 1) {
-      cityData[cityName] = [CAT_IDS[0]];
-      return;
-    }
     
-    // Cycle logic
     if (cats.length === 0) {
-      cityData[cityName] = [CAT_IDS[0]];
+      // If empty, start from active category
+      cityData[cityName] = [activeCat];
     } else {
+      // Pure cycle through all categories
       const currentIdx = CAT_IDS.indexOf(cats[0]);
-      if (currentIdx === CAT_IDS.length - 1) {
-        delete cityData[cityName]; // Back to neutral
+      if (currentIdx === -1) {
+        cityData[cityName] = [CAT_IDS[0]];
       } else {
-        cityData[cityName] = [CAT_IDS[currentIdx + 1]];
+        const nextIdx = (currentIdx + 1) % CAT_IDS.length;
+        cityData[cityName] = [CAT_IDS[nextIdx]];
       }
     }
+  }
+
+  function removeCityCategory(cityName, catId) {
+    const cats = getCityCategories(cityName);
+    const nextCats = cats.filter(id => id !== catId);
+    if (nextCats.length === 0) delete cityData[cityName];
+    else cityData[cityName] = nextCats;
   }
 
   function getFill(cityName) {
@@ -375,7 +493,9 @@
   }
 
   function updateCounts() {
-    const counts = { flort: 0, sevgili: 0, hoslanma: 0, iyidir: 0 };
+    const counts = {};
+    CATEGORIES.forEach(cat => counts[cat.id] = 0);
+    
     Object.values(cityData).forEach((cats) => {
       if (!Array.isArray(cats)) return;
       cats.forEach((catId) => {
@@ -426,7 +546,7 @@
         tag.innerHTML = `${name} <span class="remove-tag" data-name="${name}">✕</span>`;
         tag.querySelector('.remove-tag').addEventListener('click', (event) => {
           event.stopPropagation();
-          toggleCityCategory(name, cat.id);
+          removeCityCategory(name, cat.id);
           d3.selectAll('.province-path')
             .filter((d) => d.properties.name === name)
             .attr('fill', getFill(name));

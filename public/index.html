@@ -40,26 +40,7 @@
       <span class="selection-summary-label">Toplam</span>
       <span class="selection-summary-count" id="count-total">0/81</span>
     </div>
-    <div class="cat-btn active" data-cat="flort" id="cat-flort">
-      <span class="cat-dot" style="background:#e84393"></span>
-      <span class="cat-label">Flört</span>
-      <span class="cat-count" id="count-flort">0/81</span>
-    </div>
-    <div class="cat-btn" data-cat="sevgili" id="cat-sevgili">
-      <span class="cat-dot" style="background:#0984e3"></span>
-      <span class="cat-label">Sevgili</span>
-      <span class="cat-count" id="count-sevgili">0/81</span>
-    </div>
-    <div class="cat-btn" data-cat="hoslanma" id="cat-hoslanma">
-      <span class="cat-dot" style="background:#00b894"></span>
-      <span class="cat-label">Hoşlanma</span>
-      <span class="cat-count" id="count-hoslanma">0/81</span>
-    </div>
-    <div class="cat-btn" data-cat="iyidir" id="cat-iyidir">
-      <span class="cat-dot" style="background:#f39c12"></span>
-      <span class="cat-label">Kızları/Oğlanları İyidir</span>
-      <span class="cat-count" id="count-iyidir">0/81</span>
-    </div>
+    <!-- Dynamic categories will be injected here -->
   </div>
 
   <!-- MAP -->
@@ -122,6 +103,25 @@
 
   <!-- TOOLTIP -->
   <div id="tooltip" class="tooltip"></div>
+
+  <!-- ADD CATEGORY MODAL -->
+  <div id="addCatModal" class="modal">
+    <div class="modal-content">
+      <h3>Yeni Kategori</h3>
+      <div class="form-group">
+        <label>Kategori Adı</label>
+        <input type="text" id="newCatName" placeholder="Örn: Arkadaş" maxlength="30">
+      </div>
+      <div class="form-group">
+        <label>Renk Seç</label>
+        <input type="color" id="newCatColor" value="#9b59b6">
+      </div>
+      <div class="modal-actions">
+        <button id="closeModal" class="btn btn-secondary">İptal</button>
+        <button id="saveCatBtn" class="btn btn-primary">Kaydet</button>
+      </div>
+    </div>
+  </div>
 
   <script src="app.js"></script>
 </body>
