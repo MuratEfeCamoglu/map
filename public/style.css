@@ -83,7 +83,7 @@ a { color: inherit; }
   font-size:   clamp(1.6rem, 4vw, 2.8rem);
   font-weight: 800;
   letter-spacing: -0.03em;
-  background:  linear-gradient(135deg, #e74c3c 0%, #3498db 50%, #27ae60 100%);
+  background:  linear-gradient(135deg, #e84393 0%, #0984e3 50%, #f39c12 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -378,8 +378,8 @@ a { color: inherit; }
   transition:  all 0.2s;
   border:      none;
 }
-.btn-primary  { background: linear-gradient(135deg, #e74c3c, #c0392b); color: #fff; }
-.btn-primary:hover  { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(231,76,60,0.40); }
+.btn-primary  { background: linear-gradient(135deg, #e84393, #0984e3); color: #fff; }
+.btn-primary:hover  { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(232,67,147,0.40); }
 .btn-secondary { background: var(--surface); border: 1px solid var(--border); color: var(--text); }
 .btn-secondary:hover { background: var(--bg2); transform: translateY(-2px); }
 

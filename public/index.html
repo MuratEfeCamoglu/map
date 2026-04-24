@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="tr">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Türkiye Haritam</title>
-  <meta name="description" content="Türkiye'de ziyaret ettiğin şehirleri haritada işaretle — tatil, yolda geçilen, gezilen ve yaşanılan iller." />
+  <title>Türkiye İlişki Haritası</title>
+  <meta name="description"
+    content="Türkiye'deki illere göre ilişki durumlarını haritada işaretle — flört, sevgili, hoşlanma ve daha fazlası." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
@@ -15,11 +17,12 @@
   <!-- jsPDF for PDF export -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
+
 <body>
 
   <!-- TOP NAV -->
   <nav class="navbar">
-    <span class="nav-brand">🗺️ Türkiye Haritam</span>
+    <span class="nav-brand">🗺️ Türkiye İlişki Haritası</span>
     <div class="nav-right">
       <button id="themeToggle" class="icon-btn" title="Tema">🌙</button>
     </div>
@@ -27,8 +30,8 @@
 
   <!-- HERO -->
   <header class="hero">
-    <h1>Türkiye Haritam</h1>
-    <p class="subtitle">İllerin üzerine tıkla ve durumunu seç. Her tıklamada kategori değişir.</p>
+    <h1>Türkiye İlişki Haritası</h1>
+    <p class="subtitle">İllere tıklayarak kategoriler arasında geçiş yapabilirsin. Sağ tık ile temizleyebilirsin.</p>
   </header>
 
   <!-- CATEGORIES LEGEND -->
@@ -37,25 +40,25 @@
       <span class="selection-summary-label">Toplam</span>
       <span class="selection-summary-count" id="count-total">0/81</span>
     </div>
-    <div class="cat-btn active" data-cat="tatil"   id="cat-tatil">
-      <span class="cat-dot" style="background:#e74c3c"></span>
-      <span class="cat-label">🏖️ Tatile Gidilen</span>
-      <span class="cat-count" id="count-tatil">0/81</span>
+    <div class="cat-btn active" data-cat="flort" id="cat-flort">
+      <span class="cat-dot" style="background:#e84393"></span>
+      <span class="cat-label">Flört</span>
+      <span class="cat-count" id="count-flort">0/81</span>
     </div>
-    <div class="cat-btn" data-cat="yolda"   id="cat-yolda">
-      <span class="cat-dot" style="background:#3498db"></span>
-      <span class="cat-label">🚗 Yolda Geçilen</span>
-      <span class="cat-count" id="count-yolda">0/81</span>
+    <div class="cat-btn" data-cat="sevgili" id="cat-sevgili">
+      <span class="cat-dot" style="background:#0984e3"></span>
+      <span class="cat-label">Sevgili</span>
+      <span class="cat-count" id="count-sevgili">0/81</span>
     </div>
-    <div class="cat-btn" data-cat="gezilen"   id="cat-gezilen">
-      <span class="cat-dot" style="background:#27ae60"></span>
-      <span class="cat-label">🧭 Gezilen</span>
-      <span class="cat-count" id="count-gezilen">0/81</span>
+    <div class="cat-btn" data-cat="hoslanma" id="cat-hoslanma">
+      <span class="cat-dot" style="background:#00b894"></span>
+      <span class="cat-label">Hoşlanma</span>
+      <span class="cat-count" id="count-hoslanma">0/81</span>
     </div>
-    <div class="cat-btn" data-cat="yasanilan" id="cat-yasanilan">
+    <div class="cat-btn" data-cat="iyidir" id="cat-iyidir">
       <span class="cat-dot" style="background:#f39c12"></span>
-      <span class="cat-label">🏠 Yaşanılan</span>
-      <span class="cat-count" id="count-yasanilan">0/81</span>
+      <span class="cat-label">Kızları/Oğlanları İyidir</span>
+      <span class="cat-count" id="count-iyidir">0/81</span>
     </div>
   </div>
 
@@ -69,30 +72,30 @@
           <span id="export-count-total">0/81</span>
         </div>
         <div class="export-stats-row">
-          <span>Tatil</span>
-          <span id="export-count-tatil">0/81</span>
+          <span>Flört</span>
+          <span id="export-count-flort">0/81</span>
         </div>
         <div class="export-stats-row">
-          <span>Yolda</span>
-          <span id="export-count-yolda">0/81</span>
+          <span>Sevgili</span>
+          <span id="export-count-sevgili">0/81</span>
         </div>
         <div class="export-stats-row">
-          <span>Gezilen</span>
-          <span id="export-count-gezilen">0/81</span>
+          <span>Hoşlanma</span>
+          <span id="export-count-hoslanma">0/81</span>
         </div>
         <div class="export-stats-row">
-          <span>Yaşanılan</span>
-          <span id="export-count-yasanilan">0/81</span>
+          <span>Kızları/Oğlanları İyidir</span>
+          <span id="export-count-iyidir">0/81</span>
         </div>
       </div>
       <div class="map-legend" id="exportLegend">
-        <div class="legend-item"><span class="legend-color" style="background:#e74c3c"></span> Tatil</div>
-        <div class="legend-item"><span class="legend-color" style="background:#3498db"></span> Yolda</div>
-        <div class="legend-item"><span class="legend-color" style="background:#27ae60"></span> Gezilen</div>
-        <div class="legend-item"><span class="legend-color" style="background:#f39c12"></span> Yaşanılan</div>
+        <div class="legend-item"><span class="legend-color" style="background:#e84393"></span> Flört</div>
+        <div class="legend-item"><span class="legend-color" style="background:#0984e3"></span> Sevgili</div>
+        <div class="legend-item"><span class="legend-color" style="background:#00b894"></span> Hoşlanma</div>
+        <div class="legend-item"><span class="legend-color" style="background:#f39c12"></span> Kızları/Oğlanları İyidir</div>
       </div>
     </div>
-    <div class="map-hint">Tıklama ile kategori ata · Tekrar tıklayarak kategori değiştir · Sağ tık ile temizle</div>
+    <div class="map-hint">Tiklama ile secili kategoriyi ekle veya kaldir · Sag tik ile sehri temizle</div>
   </main>
 
   <!-- SELECTED CITIES LIST -->
@@ -108,12 +111,13 @@
       <button id="downloadJpgBtn" class="btn btn-primary">⬇️ JPG</button>
       <button id="downloadPdfBtn" class="btn btn-primary">⬇️ PDF</button>
     </div>
-    <button id="resetBtn"    class="btn btn-secondary">🔄 Sıfırla</button>
+    <button id="resetBtn" class="btn btn-secondary">🔄 Sıfırla</button>
   </div>
 
   <!-- FOOTER -->
   <footer class="footer">
-    <p>Harita verisi: <a href="https://github.com/ozanyerli/turkeyvisited" target="_blank">ozanyerli/turkeyvisited</a></p>
+    <p>Harita verisi: <a href="https://github.com/ozanyerli/turkeyvisited" target="_blank">ozanyerli/turkeyvisited</a>
+    </p>
   </footer>
 
   <!-- TOOLTIP -->
@@ -121,4 +125,5 @@
 
   <script src="app.js"></script>
 </body>
+
 </html>
