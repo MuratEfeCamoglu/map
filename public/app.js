@@ -21,6 +21,30 @@
     Kirsehir: 'Kirsehir',
     Nevsehir: 'Nevsehir',
     Sanliurfa: 'S.Urfa',
+    Afyonkarahisar: 'Afyon',
+    Gaziantep: 'G.Antep',
+    Gümüshane: 'G.Hane',
+    Kirklareli: 'K.Eli',
+    Kocaeli: 'Kocaeli',
+    Zonguldak: 'Zonguldak',
+  };
+
+  const LABEL_OFFSETS = {
+    'Yalova': { dx: -2, dy: -6 },
+    'Kocaeli': { dx: -5, dy: -2 },
+    'Sakarya': { dx: 5, dy: -2 },
+    'Düzce': { dx: 5, dy: 3 },
+    'Bolu': { dx: 0, dy: 8 },
+    'Bilecik': { dx: 0, dy: 10 },
+    'Bartin': { dx: 0, dy: -8 },
+    'Zonguldak': { dx: -8, dy: 2 },
+    'Karabük': { dx: 6, dy: 5 },
+    'Osmaniye': { dx: 8, dy: 3 },
+    'Kilis': { dx: 0, dy: 7 },
+    'Bayburt': { dx: 0, dy: 6 },
+    'Gümüshane': { dx: 0, dy: -6 },
+    'Iğdir': { dx: 5, dy: 0 },
+    'Yalova': { dx: -2, dy: -8 }
   };
   const DEFAULT_COLOR = '#b0bec5';
   const DEFAULT_COLOR_DARK = '#455a64';
@@ -31,6 +55,7 @@
   let isDark = savedTheme ? savedTheme === 'dark' : true;
   let mapSvg = null;
   let currentMapWidth = 0;
+  let pathGen = null;
 
   applyTheme(isDark);
 
@@ -286,7 +311,7 @@
     const projection = d3.geoEqualEarth();
     projection.fitSize([width, height], geoData);
 
-    const pathGen = d3.geoPath().projection(projection);
+    pathGen = d3.geoPath().projection(projection);
     const svg = d3
       .select('#map_container')
       .append('svg')
@@ -353,8 +378,14 @@
       .selectAll('text')
       .data(geoData.features)
       .join('text')
-      .attr('x', (d) => pathGen.centroid(d)[0])
-      .attr('y', (d) => pathGen.centroid(d)[1])
+      .attr('x', (d) => {
+        const offset = LABEL_OFFSETS[d.properties.name] || { dx: 0, dy: 0 };
+        return pathGen.centroid(d)[0] + (offset.dx * (width / 1000));
+      })
+      .attr('y', (d) => {
+        const offset = LABEL_OFFSETS[d.properties.name] || { dx: 0, dy: 0 };
+        return pathGen.centroid(d)[1] + (offset.dy * (width / 1000));
+      })
       .attr('text-anchor', 'middle')
       .attr('dominant-baseline', 'central')
       .attr('class', 'city-label')
@@ -456,12 +487,12 @@
   }
 
   function getLabelFontSize(width) {
-    if (width > 1400) return 8.5;
-    if (width > 900) return 7.5;
-    if (width > 760) return 6.8;
-    if (width > 600) return 6.5;
-    if (width > 420) return 5.8;
-    return 5.1;
+    if (width > 1400) return 8.0;
+    if (width > 900) return 7.0;
+    if (width > 760) return 6.2;
+    if (width > 600) return 5.8;
+    if (width > 420) return 5.2;
+    return 4.6;
   }
 
   function getCityLabel(cityName, width) {
@@ -477,6 +508,14 @@
   function updateLabelLayout(svg, width) {
     svg
       .selectAll('.city-label')
+      .attr('x', (d) => {
+        const offset = LABEL_OFFSETS[d.properties.name] || { dx: 0, dy: 0 };
+        return pathGen.centroid(d)[0] + (offset.dx * (width / 1000));
+      })
+      .attr('y', (d) => {
+        const offset = LABEL_OFFSETS[d.properties.name] || { dx: 0, dy: 0 };
+        return pathGen.centroid(d)[1] + (offset.dy * (width / 1000));
+      })
       .text((d) => getCityLabel(d.properties.name, width))
       .style('font-size', getLabelFontSize(width) + 'px');
   }
